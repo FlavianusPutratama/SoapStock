@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null'); // Penjual
             $table->string('customer_name')->nullable(); // Bisa jadi pembeli tidak mau disebutkan namanya
-            $table->dateTime('sale_date');
+            $table->date('sale_date');
             $table->string('payment_method')->nullable();
             $table->string('payment_status')->default('Belum Dibayar'); // "Belum Dibayar", "Sudah Dibayar", "Dibatalkan"
             $table->decimal('total_amount_sold', 15, 2)->default(0); // Total harga jual

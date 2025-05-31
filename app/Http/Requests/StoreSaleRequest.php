@@ -24,7 +24,7 @@ class StoreSaleRequest extends FormRequest
     {
         return [
             'customer_name' => ['nullable', 'string', 'max:255'],
-            'sale_date' => ['required', 'date_format:Y-m-d H:i:s'], // Atau hanya 'date' jika tidak perlu jam & menit
+            'sale_date' => ['required', 'date_format:Y-m-d'], // Atau hanya 'date' jika tidak perlu jam & menit
             'payment_method' => ['required', 'string', Rule::in(['Cash', 'Transfer', 'QRIS', 'Lainnya'])], // Sesuaikan metodenya
             'payment_status' => ['required', 'string', Rule::in(['Belum Dibayar', 'Sudah Dibayar'])], // Sesuaikan statusnya
             'notes' => ['nullable', 'string', 'max:5000'],

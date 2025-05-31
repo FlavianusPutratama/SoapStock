@@ -7,6 +7,35 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+
+            {{-- =============================================================== --}}
+            {{-- == BLOK UNTUK MENAMPILKAN FLASH MESSAGE SUKSES/ERROR == --}}
+            {{-- =============================================================== --}}
+            @if (session('success'))
+                <div class="mb-6 p-4 bg-green-100 border-l-4 border-green-500 text-green-700 rounded-md shadow-md" role="alert">
+                    <div class="flex">
+                        <div>
+                            <p class="font-bold">Sukses!</p>
+                            <p>{{ session('success') }}</p>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="mb-6 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded-md shadow-md" role="alert">
+                    <div class="flex">
+                        <div>
+                            <p class="font-bold">Error!</p>
+                            <p>{{ session('error') }}</p>
+                        </div>
+                    </div>
+                </div>
+            @endif
+            {{-- =============================================================== --}}
+            {{-- == AKHIR BLOK FLASH MESSAGE == --}}
+            {{-- =============================================================== --}}
+
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     {{ __("Selamat datang kembali, ") }} {{ auth()->user()->name }}!
@@ -63,15 +92,15 @@
 
             <div class="mt-8">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Aksi Cepat:</h3>
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    <a href="{{ route('penjual.sales.create') }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-4 rounded text-center">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    <a href="{{ route('penjual.sales.create') }}" class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-4 rounded text-center transition duration-150 ease-in-out">
                         Transaksi Baru
                     </a>
-                    <a href="{{ route('penjual.stockins.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded text-center">
+                    <a href="{{ route('penjual.stockins.create') }}" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded text-center transition duration-150 ease-in-out">
                         Input Stok Masuk
                     </a>
-                    <a href="{{ route('inventory.products.create') }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-3 px-4 rounded text-center">
-                        Tambah Produk Baru
+                    <a href="{{ route('inventory.products.index') }}" class="w-full bg-purple-500 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded text-center transition duration-150 ease-in-out">
+                        Lihat Produk
                     </a>
                 </div>
             </div>

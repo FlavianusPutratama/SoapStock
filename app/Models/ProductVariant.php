@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProductVariant extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes; // <--- TAMBAHKAN TRAIT SoftDeletes DI SINI
 
     protected $fillable = [
         'product_id',
@@ -17,9 +18,8 @@ class ProductVariant extends Model
         'current_stock',
         'purchase_price',
         'selling_price',
-        'created_by_id', // ID user yang membuat varian
-        'updated_by_id', // ID user yang terakhir mengubah varian
-        // 'low_stock_threshold',
+        'created_by_id',
+        'updated_by_id',
     ];
 
     public function product(): BelongsTo

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Sale;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+// use Illuminate\Support\Facades\Auth; // Uncomment jika Anda mencatat siapa yang update
 
 class OrderTrackingController extends Controller
 {
@@ -24,9 +25,9 @@ class OrderTrackingController extends Controller
         // Ambil penjualan berdasarkan status, urutkan dari yang terbaru
         // Tambahkan paginasi jika datanya banyak
         $sales = Sale::where('payment_status', $filterStatus)
-                     ->orderBy('sale_date', 'desc')
-                     ->with('user', 'items.productVariant.product') // Eager load relasi
-                     ->paginate(15); // Contoh paginasi
+                       ->orderBy('sale_date', 'desc')
+                       ->with('user', 'items.productVariant.product') // Eager load relasi
+                       ->paginate(15); // Contoh paginasi
         
         return view('penjual.orders.index', compact('sales', 'filterStatus', 'allowedStatuses'));
     }
@@ -35,10 +36,12 @@ class OrderTrackingController extends Controller
      * Show the form for editing the specified sale's payment status.
      * (Opsional, bisa langsung update dari halaman index atau modal)
      */
-    public function edit(Sale $sale)
+    public function edit(Sale $sale) // Method ini tidak terpakai jika update langsung dari index
     {
         $allowedStatuses = ['Belum Dibayar', 'Sudah Dibayar', 'Dibatalkan'];
+        // Jika Anda membuat view terpisah untuk edit:
         // return view('penjual.orders.edit', compact('sale', 'allowedStatuses'));
+        // Untuk sekarang, placeholder ini tidak masalah karena tidak dipanggil dari route yang aktif
         return "Form Edit Status Pembayaran untuk Order ID: {$sale->id} (Akan diganti view)";
     }
 
@@ -46,7 +49,7 @@ class OrderTrackingController extends Controller
     /**
      * Update the payment status of the specified sale.
      */
-    public function updateStatus(Request $request, Sale $sale) // Ubah nama method agar lebih spesifik
+    public function updateStatus(Request $request, Sale $sale)
     {
         $allowedStatuses = ['Belum Dibayar', 'Sudah Dibayar', 'Dibatalkan'];
 
@@ -54,13 +57,19 @@ class OrderTrackingController extends Controller
             'payment_status' => ['required', 'string', Rule::in($allowedStatuses)],
         ]);
 
+        $oldStatus = $sale->payment_status; // Simpan status lama untuk pesan jika perlu
         $sale->payment_status = $validated['payment_status'];
-        // Anda mungkin ingin mencatat siapa yang mengubah status dan kapan
-        // $sale->status_updated_by = Auth::id();
-        // $sale->status_updated_at = now();
+        // Opsional: Catat siapa dan kapan status diubah
+        // $sale->updated_by = Auth::id(); // Jika ada kolom updated_by di tabel sales
+        // $sale->status_last_updated_at = now(); // Jika ada kolom untuk ini
         $sale->save();
 
-        // return redirect()->route('penjual.orders.index', ['status' => $sale->payment_status])->with('success', "Status pembayaran untuk Order ID: {$sale->id} berhasil diperbarui menjadi '{$sale->payment_status}'.");
-        return "Status Pembayaran untuk Order ID: {$sale->id} BERHASIL diupdate menjadi '{$sale->payment_status}'. Redirecting...";
+        // ==================================================================
+        // == PERUBAHAN DARI PLACEHOLDER KE REDIRECT DENGAN FLASH MESSAGE ==
+        // ==================================================================
+        return redirect()->back() // Kembali ke halaman sebelumnya (daftar order)
+                         ->with('success', "Status pembayaran untuk Order ID: SO-".str_pad($sale->id, 5, '0', STR_PAD_LEFT)." berhasil diperbarui dari '{$oldStatus}' menjadi '{$sale->payment_status}'.");
+        // Kode placeholder sebelumnya:
+        // return "Status Pembayaran untuk Order ID: {$sale->id} BERHASIL diupdate menjadi '{$sale->payment_status}'. Redirecting...";
     }
 }

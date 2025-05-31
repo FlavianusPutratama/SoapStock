@@ -9,10 +9,12 @@ class StoreStockInRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
+     *
+     * @return bool
      */
     public function authorize(): bool
     {
-        // Akan dihandle oleh middleware role di route
+        // Asumsikan otorisasi sudah dihandle oleh middleware pada route
         return true;
     }
 
@@ -26,14 +28,21 @@ class StoreStockInRequest extends FormRequest
         return [
             'product_variant_id' => ['required', 'integer', Rule::exists('product_variants', 'id')],
             'quantity_added' => ['required', 'integer', 'min:1'],
-            'purchase_price_at_entry' => ['required', 'numeric', 'min:0'],
-            'selling_price_set_at_entry' => ['nullable', 'numeric', 'min:0'], // Bisa jadi mengambil dari harga jual varian yg sudah ada
+            // Harga beli di form sekarang opsional untuk tujuan update master, tapi controller akan handle nilainya
+            'purchase_price_at_entry' => ['nullable', 'numeric', 'min:0', 'max:99999999.99'], // Tambahkan max jika perlu
+            'selling_price_set_at_entry' => ['nullable', 'numeric', 'min:0', 'max:99999999.99'],
             'entry_date' => ['required', 'date'],
             'supplier_name' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string', 'max:5000'],
         ];
     }
 
+    /**
+     * Get custom messages for validator errors.
+     * (Opsional)
+     *
+     * @return array
+     */
     public function messages(): array
     {
         return [
@@ -42,10 +51,12 @@ class StoreStockInRequest extends FormRequest
             'quantity_added.required' => 'Jumlah stok masuk wajib diisi.',
             'quantity_added.integer' => 'Jumlah stok masuk harus berupa angka.',
             'quantity_added.min' => 'Jumlah stok masuk minimal 1.',
-            'purchase_price_at_entry.required' => 'Harga beli wajib diisi.',
-            'purchase_price_at_entry.numeric' => 'Harga beli harus berupa angka.',
+            'purchase_price_at_entry.numeric' => 'Harga beli baru harus berupa angka.',
+            'purchase_price_at_entry.min' => 'Harga beli baru tidak boleh negatif.',
+            'selling_price_set_at_entry.numeric' => 'Harga jual baru harus berupa angka.',
+            'selling_price_set_at_entry.min' => 'Harga jual baru tidak boleh negatif.',
             'entry_date.required' => 'Tanggal barang masuk wajib diisi.',
-            'entry_date.date' => 'Format tanggal tidak valid.',
+            'entry_date.date' => 'Format tanggal barang masuk tidak valid.',
         ];
     }
 }

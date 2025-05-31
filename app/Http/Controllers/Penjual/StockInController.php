@@ -5,13 +5,16 @@ namespace App\Http\Controllers\Penjual;
 use App\Http\Controllers\Controller;
 use App\Models\ProductVariant;
 use App\Models\StockIn;
-use App\Http\Requests\StoreStockInRequest; // Pastikan ini sudah dibuat
+use App\Http\Requests\StoreStockInRequest;
+use Illuminate\Http\Request; // Tidak terpakai jika hanya ada create & store dengan FormRequest
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB; // Untuk Database Transaction
+use Illuminate\Support\Facades\DB;
 
 class StockInController extends Controller
 {
-    // Method create() sudah ada dari respons sebelumnya...
+    /**
+     * Show the form for creating a new resource.
+     */
     public function create()
     {
         $productVariants = ProductVariant::with('product')
@@ -35,40 +38,49 @@ class StockInController extends Controller
 
         try {
             DB::transaction(function () use ($validatedData) {
-                // 1. Buat entri baru di tabel stock_ins (catatan histori stok masuk)
+                $variant = ProductVariant::findOrFail($validatedData['product_variant_id']);
+                $actualPurchasePriceForBatch = null;
+
+                // Tentukan harga beli aktual untuk batch ini DAN update harga master jika diinput baru
+                if (isset($validatedData['purchase_price_at_entry']) && !is_null($validatedData['purchase_price_at_entry'])) {
+                    // Jika harga beli diinput di form, gunakan itu untuk batch ini
+                    // DAN update harga beli master di ProductVariant
+                    $actualPurchasePriceForBatch = $validatedData['purchase_price_at_entry'];
+                    $variant->purchase_price = $actualPurchasePriceForBatch; // Update harga master
+                } else {
+                    // Jika harga beli tidak diinput di form (dibiarkan kosong),
+                    // harga beli master di ProductVariant TIDAK BERUBAH.
+                    // Gunakan harga beli master yang sudah ada di ProductVariant untuk batch ini.
+                    $actualPurchasePriceForBatch = $variant->purchase_price;
+                }
+
+                // Buat entri StockIn dengan harga beli aktual untuk batch ini
                 StockIn::create([
                     'product_variant_id' => $validatedData['product_variant_id'],
                     'user_id' => $validatedData['user_id'],
                     'quantity_added' => $validatedData['quantity_added'],
-                    'purchase_price_at_entry' => $validatedData['purchase_price_at_entry'],
+                    'purchase_price_at_entry' => $actualPurchasePriceForBatch, // Simpan harga aktual batch
                     'selling_price_set_at_entry' => $validatedData['selling_price_set_at_entry'] ?? null,
                     'entry_date' => $validatedData['entry_date'],
                     'supplier_name' => $validatedData['supplier_name'] ?? null,
                     'notes' => $validatedData['notes'] ?? null,
                 ]);
 
-                // 2. Update data di tabel product_variants
-                $variant = ProductVariant::findOrFail($validatedData['product_variant_id']);
-
-                // Tambah stok saat ini
+                // Update stok di ProductVariant
                 $variant->current_stock += $validatedData['quantity_added'];
 
-                // Update harga beli varian dengan harga beli terakhir saat entry
-                $variant->purchase_price = $validatedData['purchase_price_at_entry'];
-
-                // Jika harga jual baru di-set saat entry, update harga jual varian
+                // Update harga jual di varian jika diinput baru
                 if (isset($validatedData['selling_price_set_at_entry']) && !is_null($validatedData['selling_price_set_at_entry'])) {
                     $variant->selling_price = $validatedData['selling_price_set_at_entry'];
                 }
 
-                // Catat siapa yang terakhir update varian ini
-                $variant->updated_by_id = Auth::id();
-
-                $variant->save();
+                $variant->updated_by_id = Auth::id(); // Catat siapa yang terakhir update varian
+                $variant->save(); // Simpan semua perubahan pada ProductVariant
             });
 
             // Jika transaksi berhasil
-            return redirect()->route(auth()->user()->role == 'penjual' ? 'penjual.dashboard' : 'inventory.products.index')
+            $redirectRoute = auth()->user()->role == 'penjual' ? 'penjual.dashboard' : 'inventory.products.index';
+            return redirect()->route($redirectRoute)
                              ->with('success', 'Stok berhasil ditambahkan!');
 
         } catch (\Exception $e) {

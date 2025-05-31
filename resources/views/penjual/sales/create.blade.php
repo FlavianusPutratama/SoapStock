@@ -9,6 +9,16 @@
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8"> {{-- Lebar agar muat banyak field --}}
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                    @if ($errors->any())
+                        <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md">
+                            <div class="font-bold">{{ __('Whoops! Ada yang salah dengan input Anda.') }}</div>
+                            <ul class="mt-2 list-disc list-inside text-sm">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <form method="POST" action="{{ route('penjual.sales.store') }}" id="saleForm">
                         @csrf
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -20,7 +30,12 @@
 
                             <div>
                                 <label for="sale_date" class="block font-medium text-sm text-gray-700 dark:text-gray-300">{{ __('Tanggal Transaksi') }}</label>
-                                <input id="sale_date" class="block mt-1 w-full rounded-md shadow-sm" type="datetime-local" name="sale_date" value="{{ old('sale_date', now()->format('Y-m-d\TH:i')) }}" required />
+                                <input id="sale_date"
+                                    class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-indigo-300 dark:focus:border-indigo-500 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-600 focus:ring-opacity-50" {{-- Kembalikan class styling normal --}}
+                                    type="date"
+                                    name="sale_date"
+                                    value="{{ old('sale_date', now()->format('Y-m-d')) }}"
+                                    required /> {{-- Hapus atribut readonly --}}
                                 @error('sale_date') <p class="mt-1 text-sm text-red-500">{{ $message }}</p> @enderror
                             </div>
 

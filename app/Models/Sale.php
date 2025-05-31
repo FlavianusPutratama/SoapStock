@@ -29,7 +29,7 @@ class Sale extends Model
      * @var array
      */
     protected $casts = [
-        'sale_date' => 'datetime',
+        'sale_date' => 'date',
     ];
 
     /**

@@ -27,9 +27,11 @@ class ProductVariantController extends Controller
 
         ProductVariant::create($validatedData);
 
-        // return redirect()->route('inventory.products.show', $product)->with('success', 'Varian produk berhasil ditambahkan!');
-        // atau redirect ke halaman detail produk, atau daftar varian produk tsb
-        return "Varian '{$validatedData['size']}' untuk Produk '{$product->name}' BERHASIL disimpan. Redirecting...";
+        // Redirect ke halaman detail produk dengan pesan sukses
+        return redirect()->route('inventory.products.show', $product->id) // $product->id agar lebih eksplisit
+                         ->with('success', 'Varian produk "' . $validatedData['size'] . '" berhasil ditambahkan untuk produk "' . $product->name . '".');
+        // Baris return di bawah ini sudah tidak terjangkau dan bisa dihapus:
+        // return "Varian '{$validatedData['size']}' untuk Produk '{$product->name}' BERHASIL disimpan. Redirecting...";
     }
 
     // Menampilkan form edit untuk varian tertentu
@@ -46,26 +48,28 @@ class ProductVariantController extends Controller
         $validatedData['updated_by_id'] = Auth::id();
 
         $variant->update($validatedData);
+        $product = $variant->product; // Ambil produk induknya untuk redirect
 
-        // return redirect()->route('inventory.products.show', $variant->product_id)->with('success', 'Varian produk berhasil diperbarui!');
-        return "Varian '{$variant->size}' (Produk: {$variant->product->name}) BERHASIL diupdate. Redirecting...";
+        return redirect()->route('inventory.products.show', $product->id)
+                         ->with('success', 'Varian produk "' . $variant->size . '" berhasil diperbarui.');
     }
 
-    // Menghapus varian tertentu
+    // Menghapus (Soft Delete) varian tertentu
     public function destroy(ProductVariant $variant)
     {
-        // Cek apakah varian terkait dengan transaksi (stock_ins atau sale_items)
-        if ($variant->stockIns()->exists() || $variant->saleItems()->exists()) {
-            // return redirect()->back()->with('error', "Varian '{$variant->size}' tidak dapat dihapus karena memiliki histori transaksi.");
-             return "ERROR: Varian '{$variant->size}' tidak dapat dihapus karena memiliki histori transaksi.";
-        }
-
         $variantSize = $variant->size;
-        $productName = $variant->product->name;
-        $productId = $variant->product_id;
-        $variant->delete();
+        $product = $variant->product; // Simpan produk induk untuk redirect
 
-        // return redirect()->route('inventory.products.show', $productId)->with('success', "Varian '{$variantSize}' berhasil dihapus dari produk '{$productName}'.");
-        return "Varian '{$variantSize}' (Produk: {$productName}) BERHASIL dihapus. Redirecting...";
+        // Dengan SoftDeletes trait di model ProductVariant, panggilan delete() akan melakukan soft delete.
+        // Pengecekan $variant->stockIns()->exists() || $variant->saleItems()->exists() tidak lagi
+        // diperlukan untuk MENCEGAH delete, karena soft delete aman untuk integritas data historis.
+        // Jika Anda tetap ingin ada pesan berbeda jika ada histori, pengecekan bisa saja dipertahankan
+        // hanya untuk tujuan informasi, tapi untuk fungsionalitas dasar soft delete, ini sudah cukup.
+
+        $variant->delete(); // Ini akan melakukan SOFT DELETE (mengisi kolom deleted_at)
+
+        // Pesan bisa disesuaikan untuk lebih mencerminkan bahwa ini adalah penonaktifan/soft delete
+        return redirect()->route('inventory.products.show', $product->id)
+                         ->with('success', "Varian '{$variantSize}' berhasil dihapus (dinonaktifkan) dari produk '{$product->name}'.");
     }
 }

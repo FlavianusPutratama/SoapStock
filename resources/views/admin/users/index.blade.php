@@ -12,14 +12,39 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            {{-- Success Alert --}}
             @if (session('success'))
-                <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                    <span class="block sm:inline">{{ session('success') }}</span>
+                <div x-data="{ show: true }" x-show="show" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 transform scale-100" x-transition:leave-end="opacity-0 transform scale-90"
+                     class="mb-4 flex items-start p-4 bg-green-50 dark:bg-green-800 dark:bg-opacity-30 border-l-4 border-success dark:border-green-400 text-green-700 dark:text-green-300 rounded-r-md shadow-md relative" role="alert">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-check-circle fa-lg"></i>
+                    </div>
+                    <div class="ml-3 flex-grow">
+                        <p class="font-semibold">{{ __('Sukses!') }}</p>
+                        <p class="text-sm">{{ session('success') }}</p>
+                    </div>
+                    <button @click="show = false" class="ml-auto -mx-1.5 -my-1.5 bg-transparent text-green-500 dark:text-green-400 rounded-lg focus:ring-2 focus:ring-green-400 p-1.5 hover:bg-green-100 dark:hover:bg-green-700 inline-flex h-8 w-8" aria-label="Dismiss">
+                        <span class="sr-only">Dismiss</span>
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
             @endif
+
+            {{-- Error Alert --}}
             @if (session('error'))
-                 <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                    <span class="block sm:inline">{{ session('error') }}</span>
+                <div x-data="{ show: true }" x-show="show" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 transform scale-100" x-transition:leave-end="opacity-0 transform scale-90"
+                     class="mb-4 flex items-start p-4 bg-red-50 dark:bg-red-800 dark:bg-opacity-30 border-l-4 border-danger dark:border-red-400 text-red-700 dark:text-red-300 rounded-r-md shadow-md relative" role="alert">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-circle fa-lg"></i>
+                    </div>
+                    <div class="ml-3 flex-grow">
+                        <p class="font-semibold">{{ __('Error!') }}</p>
+                        <p class="text-sm">{{ session('error') }}</p>
+                    </div>
+                    <button @click="show = false" class="ml-auto -mx-1.5 -my-1.5 bg-transparent text-red-500 dark:text-red-400 rounded-lg focus:ring-2 focus:ring-red-400 p-1.5 hover:bg-red-100 dark:hover:bg-red-700 inline-flex h-8 w-8" aria-label="Dismiss">
+                        <span class="sr-only">Dismiss</span>
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
             @endif
 
