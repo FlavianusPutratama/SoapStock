@@ -17,7 +17,8 @@
                 <form method="GET" action="{{ route('penjual.revenue.report') }}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
                     <div>
                         <label for="period" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Periode</label>
-                        <select name="period" id="period" class="mt-1 block w-full rounded-md shadow-sm">
+                        <select name="period" id="period"
+                                class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-indigo-300 dark:focus:border-indigo-500 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-600 focus:ring-opacity-50">
                             <option value="daily" {{ ($period ?? 'monthly') == 'daily' ? 'selected' : '' }}>Harian</option>
                             <option value="weekly" {{ ($period ?? 'monthly') == 'weekly' ? 'selected' : '' }}>Mingguan</option>
                             <option value="monthly" {{ ($period ?? 'monthly') == 'monthly' ? 'selected' : '' }}>Bulanan</option>
@@ -27,11 +28,13 @@
                     </div>
                     <div id="start_date_div" class="{{ ($period ?? 'monthly') == 'custom_range' || ($period ?? 'monthly') == 'daily' || ($period ?? 'monthly') == 'weekly' || ($period ?? 'monthly') == 'monthly' || ($period ?? 'monthly') == 'yearly' ? '' : 'hidden' }}">
                         <label for="start_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300" id="start_date_label">Tanggal Mulai</label>
-                        <input type="date" name="start_date" id="start_date" value="{{ $startDate ?? '' }}" class="mt-1 block w-full rounded-md shadow-sm">
+                        <input type="date" name="start_date" id="start_date" value="{{ $startDate ?? '' }}"
+                            class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-indigo-300 dark:focus:border-indigo-500 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-600 focus:ring-opacity-50">
                     </div>
                     <div id="end_date_div" class="{{ ($period ?? 'monthly') == 'custom_range' ? '' : 'hidden' }}">
                         <label for="end_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal Akhir</label>
-                        <input type="date" name="end_date" id="end_date" value="{{ $endDate ?? '' }}" class="mt-1 block w-full rounded-md shadow-sm">
+                        <input type="date" name="end_date" id="end_date" value="{{ $endDate ?? '' }}"
+                            class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-indigo-300 dark:focus:border-indigo-500 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-600 focus:ring-opacity-50">
                     </div>
                     <div>
                         <button type="submit" class="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-md shadow-sm">
