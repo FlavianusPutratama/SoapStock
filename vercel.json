@@ -19,22 +19,5 @@
             "dest": "/api/index.php"
         }
     ],
-    "env": {
-        "APP_NAME": "SoapStock",
-        "APP_ENV": "production",
-        "APP_KEY": "base64:buxBt4Jyyo9Q3c2q3TH5ne3Vf26e9saQ3atU7C+3hCE=",
-        "APP_DEBUG": "false",
-        "APP_URL": "https://soap-stock.vercel.app",
-        "LOG_CHANNEL": "stderr",
-        "SESSION_DRIVER": "cookie",
-        "CACHE_STORE": "array",
-        "QUEUE_CONNECTION": "sync",
-        "DB_CONNECTION": "mysql",
-        "DB_HOST": "sql102.infinityfree.com",
-        "DB_PORT": "3306",
-        "DB_DATABASE": "if0_39137165_soapstock_db",
-        "DB_USERNAME": "if0_39137165",
-        "DB_PASSWORD": "vian20042606"
-    },
     "outputDirectory": "public"
 }
